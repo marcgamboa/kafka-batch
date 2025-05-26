@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.springframework.boot' version '2.7.17'  // Upgrade to Spring Boot 3.x
+    id 'com.github.davidmc24.gradle.plugin.avro' version '1.9.1'
+}
+
+group = 'com.example'
+version = '1.0.0'
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+repositories {
+    mavenCentral()
+    maven { url "https://packages.confluent.io/maven/" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.9" // Spring Cloud 2023.0.1 BOM
+        mavenBom "io.confluent:kafka-schema-registry-client:7.3.0"             // keep Confluent BOM
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.cloud:spring-cloud-starter-stream-kafka'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.apache.avro:avro:1.11.1'
+    implementation 'io.confluent:kafka-avro-serializer:7.3.0'
+
+    // Remove explicit kafka-clients version unless you need a specific version
+    // Because spring-kafka brings compatible kafka-clients transitively
+    // implementation 'org.apache.kafka:kafka-clients:3.5.1'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += 'build/generated-main-avro-java'
+        }
+    }
+}
+
+compileJava.dependsOn generateAvroJava

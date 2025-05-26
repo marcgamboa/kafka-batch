@@ -1,0 +1,45 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        userEvents-in-0:
+          destination: user-events
+          group: user-group
+#          content-type: application/octet-stream
+          consumer:
+            batch-mode: true
+#            batch-size: 10
+#            batch-timeout: 1000
+            use-native-decoding: true
+      kafka:
+        binder:
+          brokers: localhost:9092
+          consumer-properties:
+#            max.poll.records: 100
+#            fetch.min.bytes: 1
+#            fetch.max.wait.ms: 500
+            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+            spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            #                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+            schema.registry.url: http://localhost:8081
+            specific.avro.reader: true
+#          producerProperties:
+#            key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#            schema.registry.url: http://localhost:8081
+#            use.latest.version: true
+
+
+#                auto.offset.reset: earliest
+#                enable.auto.commit: true
+#                max.poll.interval.ms: 300000
+#                session.timeout.ms: 10000
+#                heartbeat.interval.ms: 3000
+
+logging:
+  level:
+    org.apache.kafka.clients.consumer: DEBUG
+    org.springframework.kafka: DEBUG
+    org.springframework.cloud.stream.binder.kafka: DEBUG
+    com.example.kafka: DEBUG
